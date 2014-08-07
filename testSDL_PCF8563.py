@@ -2,7 +2,7 @@
 #
 # Test SDL_PCF8563
 # John C. Shovic, SwitchDoc Labs
-# 08/03/2014
+# 08/07/2014
 #
 #
 
@@ -26,7 +26,7 @@ filename = time.strftime("%Y-%m-%d%H:%M:%SRTCTest") + ".txt"
 starttime = datetime.datetime.utcnow()
 
 pcf8563 = SDL_PCF8563.SDL_PCF8563(1, 0x51)
-#pcf8563.write_now()
+pcf8563.write_now()
 
 # Main Loop - sleeps 10 minutes, then reads and prints values of all clocks
 
