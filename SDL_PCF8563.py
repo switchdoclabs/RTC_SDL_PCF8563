@@ -7,8 +7,8 @@
 
 # original code from below (DS1307 Code originally)
 
-#encoding: utf-8
- 
+# encoding: utf-8
+
 # Copyright (C) 2013 @XiErCh
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -39,7 +39,7 @@ def _bcd_to_int(bcd):
     """
     out = 0
     for d in (bcd >> 4, bcd):
-        for p in (1, 2, 4 ,8):
+        for p in (1, 2, 4, 8):
             if d & 1:
                 out += p
             d >>= 1
@@ -70,53 +70,54 @@ class SDL_PCF8563():
     _REG_DATE = 0x05
     _REG_MONTH = 0x07
     _REG_YEAR = 0x08
+    _REG_CLK_OUT = 0x0D
+    _REG_ALARM_TIME = 0x09
+    _REG_ALARM_MINUTES = 0x09
+    _REG_ALARM_HOURS = 0x0A
+    _REG_ALARM_DAY = 0x0B
+    _REG_ALARM_WEEKDAY = 0x0B
 
+    # Clock-out frequencies
+    CLOCK_CLK_OUT_FREQ_32_DOT_768KHZ = 0x80
+    CLOCK_CLK_OUT_FREQ_1_DOT_024KHZ = 0x81
+    CLOCK_CLK_OUT_FREQ_32_KHZ = 0x82
+    CLOCK_CLK_OUT_FREQ_1_HZ = 0x83
+    CLOCK_CLK_HIGH_IMPEDANCE = 0x0
 
     def __init__(self, twi=1, addr=0x68):
         self._bus = smbus.SMBus(twi)
         self._addr = addr
 
-
     def _write(self, register, data):
-	#print "addr =0x%x register = 0x%x data = 0x%x %i " % (self._addr, register, data,_bcd_to_int(data))
+        #print "addr =0x%x register = 0x%x data = 0x%x %i " % (self._addr, register, data,_bcd_to_int(data))
         self._bus.write_byte_data(self._addr, register, data)
 
-
     def _read(self, data):
-
-	returndata = self._bus.read_byte_data(self._addr, data)
-	#print "addr = 0x%x data = 0x%x %i returndata = 0x%x %i " % (self._addr, data, data, returndata, _bcd_to_int(returndata))
-        return returndata 
-
+        returndata = self._bus.read_byte_data(self._addr, data)
+        #print "addr = 0x%x data = 0x%x %i returndata = 0x%x %i " % (self._addr, data, data, returndata, _bcd_to_int(returndata))
+        return returndata
 
     def _read_seconds(self):
-        return _bcd_to_int(self._read(self._REG_SECONDS)& 0x7F)
-
+        return _bcd_to_int(self._read(self._REG_SECONDS) & 0x7F)
 
     def _read_minutes(self):
-        return _bcd_to_int(self._read(self._REG_MINUTES)& 0x7F)
-
+        return _bcd_to_int(self._read(self._REG_MINUTES) & 0x7F)
 
     def _read_hours(self):
         d = self._read(self._REG_HOURS) & 0x3F
         return _bcd_to_int(d & 0x3F)
 
-
     def _read_day(self):
         return _bcd_to_int(self._read(self._REG_DAY) & 0x07)
-
 
     def _read_date(self):
         return _bcd_to_int(self._read(self._REG_DATE) & 0x3F)
 
-
     def _read_month(self):
         return _bcd_to_int(self._read(self._REG_MONTH) & 0x1F)
 
-
     def _read_year(self):
         return _bcd_to_int(self._read(self._REG_YEAR))
-
 
     def read_all(self):
         """Return a tuple such as (year, month, date, day, hours, minutes,
@@ -126,25 +127,22 @@ class SDL_PCF8563():
                 self._read_day(), self._read_hours(), self._read_minutes(),
                 self._read_seconds())
 
-
     def read_str(self):
         """Return a string such as 'YY-DD-MMTHH-MM-SS'.
         """
         return '%02d-%02d-%02dT%02d:%02d:%02d' % (self._read_year(),
-                self._read_month(), self._read_date(), self._read_hours(),
-                self._read_minutes(), self._read_seconds())
-
+                                                  self._read_month(), self._read_date(), self._read_hours(),
+                                                  self._read_minutes(), self._read_seconds())
 
     def read_datetime(self, century=21, tzinfo=None):
         """Return the datetime.datetime object.
         """
         return datetime((century - 1) * 100 + self._read_year(),
-                self._read_month(), self._read_date(), self._read_hours(),
-                self._read_minutes(), self._read_seconds(), 0, tzinfo=tzinfo)
-
+                        self._read_month(), self._read_date(), self._read_hours(),
+                        self._read_minutes(), self._read_seconds(), 0, tzinfo=tzinfo)
 
     def write_all(self, seconds=None, minutes=None, hours=None, day=None,
-            date=None, month=None, year=None, save_as_24h=True):
+                  date=None, month=None, year=None, save_as_24h=True):
         """Direct write un-none value.
         Range: seconds [0,59], minutes [0,59], hours [0,23],
                day [0,7], date [1-31], month [1-12], year [0-99].
@@ -152,7 +150,7 @@ class SDL_PCF8563():
         if seconds is not None:
             if seconds < 0 or seconds > 59:
                 raise ValueError('Seconds is out of range [0,59].')
-	    seconds_reg = _int_to_bcd(seconds) 
+            seconds_reg = _int_to_bcd(seconds)
             self._write(self._REG_SECONDS, seconds_reg)
 
         if minutes is not None:
@@ -163,7 +161,7 @@ class SDL_PCF8563():
         if hours is not None:
             if hours < 0 or hours > 23:
                 raise ValueError('Hours is out of range [0,23].')
-            self._write(self._REG_HOURS, _int_to_bcd(hours) ) # no 12 hour mode
+            self._write(self._REG_HOURS, _int_to_bcd(hours))  # no 12 hour mode
 
         if year is not None:
             if year < 0 or year > 99:
@@ -185,16 +183,16 @@ class SDL_PCF8563():
                 raise ValueError('Day is out of range [1,7].')
             self._write(self._REG_DAY, _int_to_bcd(day))
 
-
     def write_datetime(self, dt):
         """Write from a datetime.datetime object.
         """
         self.write_all(dt.second, dt.minute, dt.hour,
-                dt.isoweekday(), dt.day, dt.month, dt.year % 100)
-
+                       dt.isoweekday(), dt.day, dt.month, dt.year % 100)
 
     def write_now(self):
         """Equal to PCF8563.write_datetime(datetime.datetime.now()).
         """
         self.write_datetime(datetime.now())
 
+    def set_clk_out_frequency(self, frequency=CLOCK_CLK_OUT_FREQ_1_HZ):
+            self._bus.write_byte_data(self._addr, self._REG_CLK_OUT, frequency)
