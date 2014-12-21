@@ -196,3 +196,34 @@ class SDL_PCF8563():
 
     def set_clk_out_frequency(self, frequency=CLOCK_CLK_OUT_FREQ_1_HZ):
             self._bus.write_byte_data(self._addr, self._REG_CLK_OUT, frequency)
+
+    def check_if_alarm_on(self):
+        return bool(self._bus.read_byte_data(self._addr, self._REG_CONTROL_2) & 0x08)
+
+    def turn_alarm_off(self):
+        """Should not affect the alarm interrupt state.
+        """
+        alarm_state = self._bus.read_byte_data(self._addr, self._REG_CONTROL_2)
+        self._bus.write_byte_data(self._addr, self._REG_CONTROL_2, alarm_state & 0xf7)
+
+    def clear_alarm(self):
+        """Clear status register.
+        """
+        self._bus.write_byte_data(self._addr, self._REG_CONTROL_2, 0x00)
+        """Clear status registers.
+        """
+        self._bus.write_byte_data(self._addr, self._REG_ALARM_MINUTES, 0x00)
+        self._bus.write_byte_data(self._addr, self._REG_ALARM_HOURS, 0x00)
+        self._bus.write_byte_data(self._addr, self._REG_ALARM_DAY, 0x00)
+        self._bus.write_byte_data(self._addr, self._REG_ALARM_WEEKDAY, 0x00)
+
+    def check_for_alarm_interrupt(self):
+        return bool(self._bus.read_byte_data(self._addr, self._REG_CONTROL_2) & 0x02)
+
+    def enable_alarm_interrupt(self):
+        alarm_state = self._bus.read_byte_data(self._addr, self._REG_CONTROL_2)
+        self._bus.write_byte_data(self._addr, self._REG_CONTROL_2, alarm_state & 0x02)
+
+    def disable_alarm_interrupt(self):
+        alarm_state = self._bus.read_byte_data(self._addr, self._REG_CONTROL_2)
+        self._bus.write_byte_data(self._addr, self._REG_CONTROL_2, alarm_state & 0xfd)
