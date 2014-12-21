@@ -212,10 +212,10 @@ class SDL_PCF8563():
         self._bus.write_byte_data(self._addr, self._REG_CONTROL_2, 0x00)
         """Clear status registers.
         """
-        self._bus.write_byte_data(self._addr, self._REG_ALARM_MINUTES, 0x00)
-        self._bus.write_byte_data(self._addr, self._REG_ALARM_HOURS, 0x00)
-        self._bus.write_byte_data(self._addr, self._REG_ALARM_DAY, 0x00)
-        self._bus.write_byte_data(self._addr, self._REG_ALARM_WEEKDAY, 0x00)
+        self._bus.write_byte_data(self._addr, self._REG_ALARM_MINUTES, 0x80)
+        self._bus.write_byte_data(self._addr, self._REG_ALARM_HOURS, 0x80)
+        self._bus.write_byte_data(self._addr, self._REG_ALARM_DAY, 0x80)
+        self._bus.write_byte_data(self._addr, self._REG_ALARM_WEEKDAY, 0x80)
 
     def check_for_alarm_interrupt(self):
         return bool(self._bus.read_byte_data(self._addr, self._REG_CONTROL_2) & 0x02)
@@ -232,9 +232,9 @@ class SDL_PCF8563():
         if minutes is not None:
             if minutes < 0 or minutes > 59:
                 raise ValueError('Minutes is out of range [0,59].')
-            self._write(self._REG_ALARM_MINUTES, _int_to_bcd(minutes) | 0x80)
+            self._write(self._REG_ALARM_MINUTES, _int_to_bcd(minutes) & 0x7f)
 
         if hours is not None:
             if hours < 0 or hours > 23:
                 raise ValueError('Hours is out of range [0,23].')
-            self._write(self._REG_ALARM_HOURS, _int_to_bcd(hours) | 0x80)
+            self._write(self._REG_ALARM_HOURS, _int_to_bcd(hours) & 0x7f)
