@@ -222,8 +222,19 @@ class SDL_PCF8563():
 
     def enable_alarm_interrupt(self):
         alarm_state = self._bus.read_byte_data(self._addr, self._REG_CONTROL_2)
-        self._bus.write_byte_data(self._addr, self._REG_CONTROL_2, alarm_state & 0x02)
+        self._bus.write_byte_data(self._addr, self._REG_CONTROL_2, alarm_state | 0x02)
 
     def disable_alarm_interrupt(self):
         alarm_state = self._bus.read_byte_data(self._addr, self._REG_CONTROL_2)
         self._bus.write_byte_data(self._addr, self._REG_CONTROL_2, alarm_state & 0xfd)
+
+    def set_daily_alarm(self, hours=None, minutes=None):
+        if minutes is not None:
+            if minutes < 0 or minutes > 59:
+                raise ValueError('Minutes is out of range [0,59].')
+            self._write(self._REG_ALARM_MINUTES, _int_to_bcd(minutes) | 0x80)
+
+        if hours is not None:
+            if hours < 0 or hours > 23:
+                raise ValueError('Hours is out of range [0,23].')
+            self._write(self._REG_ALARM_HOURS, _int_to_bcd(hours) | 0x80)
