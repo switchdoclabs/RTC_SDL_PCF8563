@@ -31,7 +31,7 @@
 
 from datetime import datetime
 
-import smbus
+import smbus2 as smbus
 
 
 def _bcd_to_int(bcd):
@@ -44,7 +44,7 @@ def _bcd_to_int(bcd):
                 out += p
             d >>= 1
         out *= 10
-    return out / 10
+    return out // 10
 
 
 def _int_to_bcd(n):
@@ -89,12 +89,12 @@ class SDL_PCF8563():
         self._addr = addr
 
     def _write(self, register, data):
-        #print "addr =0x%x register = 0x%x data = 0x%x %i " % (self._addr, register, data,_bcd_to_int(data))
+        #print("addr =0x%x register = 0x%x data = 0x%x %i " % (self._addr, register, data,_bcd_to_int(data)))
         self._bus.write_byte_data(self._addr, register, data)
 
     def _read(self, data):
         returndata = self._bus.read_byte_data(self._addr, data)
-        #print "addr = 0x%x data = 0x%x %i returndata = 0x%x %i " % (self._addr, data, data, returndata, _bcd_to_int(returndata))
+        #print("addr = 0x%x data = 0x%x %i returndata = 0x%x %i " % (self._addr, data, data, returndata, _bcd_to_int(returndata)))
         return returndata
 
     def _read_seconds(self):

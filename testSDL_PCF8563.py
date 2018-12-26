@@ -16,11 +16,11 @@ import SDL_PCF8563
 
 # Main Program
 
-print ""
-print "Test SDL_PCF8563 Version 1.0 - SwitchDoc Labs"
-print ""
-print ""
-print "Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S")
+print("")
+print("Test SDL_PCF8563 Version 1.0 - SwitchDoc Labs")
+print("")
+print("")
+print("Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S"))
 
 filename = time.strftime("%Y-%m-%d%H:%M:%SRTCTest") + ".txt"
 starttime = datetime.datetime.utcnow()
@@ -37,9 +37,9 @@ while True:
 
 	deltatime = currenttime - starttime
  
-	print ""
-	print "Raspberry Pi=\t" + time.strftime("%Y-%m-%d %H:%M:%S")
+	print("")
+	print("Raspberry Pi=\t" + time.strftime("%Y-%m-%d %H:%M:%S"))
 	
-	print "PCF8563=\t\t%s" % pcf8563.read_datetime()
+	print("PCF8563=\t\t%s" % pcf8563.read_datetime())
 
 	time.sleep(10.0)
