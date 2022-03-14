@@ -44,7 +44,7 @@ def _bcd_to_int(bcd):
                 out += p
             d >>= 1
         out *= 10
-    return out // 10
+    return int(out / 10)
 
 
 def _int_to_bcd(n):
@@ -127,10 +127,10 @@ class SDL_PCF8563():
                 self._read_day(), self._read_hours(), self._read_minutes(),
                 self._read_seconds())
 
-    def read_str(self):
+    def read_str(self,century=21):
         """Return a string such as 'YY-DD-MMTHH-MM-SS'.
         """
-        return '%02d-%02d-%02dT%02d:%02d:%02d' % (self._read_year(),
+        return '%02d-%02d-%02dT%02d:%02d:%02d' % ((century - 1) * 100 + self._read_year(),
                                                   self._read_month(), self._read_date(), self._read_hours(),
                                                   self._read_minutes(), self._read_seconds())
 
